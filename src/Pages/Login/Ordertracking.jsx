@@ -10,13 +10,18 @@ import {
   useMediaQuery,
   Chip,
   useTheme,
+  Stepper,
+  Step,
+  StepLabel,
+  StepContent,
+  Paper,
+  Button,
 } from "@mui/material";
 import moment from "moment";
 import SweetAlert from "react-bootstrap-sweetalert";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import images from "../../assets/map2.jpeg";
 import Loader from "./Loder";
-import { DataGrid } from "@mui/x-data-grid";
 import axios from "../../axios";
 
 function Ordertracking() {
@@ -25,116 +30,41 @@ function Ordertracking() {
   const [updatemessage, setUpdatemessage] = useState(false);
   const [openLoader, setOpenLoader] = useState(false);
   const [searchvalue, setSearchvalue] = useState("");
-  const [rows, setRows] = useState([]);
+  const [orderDetails, setOrderDetails] = useState(null);
 
-  const StatusChip = ({ status }) => {
-    let color = "default";
-    if (status === "Shipped") color = "primary";
-    else if (status === "In Transit") color = "warning";
-    else if (status === "Delivered") color = "success";
-
-    return <Chip label={status} color={color} size="small" />;
-  };
+  const orderSteps = ["Pending", "In Progress", "Completed"];
 
   const getallorder = async () => {
     setOpenLoader(true);
-    setRows([]);
+    setOrderDetails(null);
 
     setTimeout(async () => {
       try {
         const res = await axios.instance.get(
-          `Getordersearchvalue?search=${searchvalue}`,{
+          `Getordersearchvalue?search=${searchvalue}`,
+          {
             headers: {
-              Authorization: sessionStorage.getItem('token'), 
+              Authorization: sessionStorage.getItem("token"),
               "Content-Type": "application/json",
             },
           }
         );
-        const formattedRows = res.data.map((user) => ({
-          id: user._id,
-          product: user.product,
-          quantity: user.quantity,
-          status: user.status,
-          createdAt: user.createdAt,
-          orderID:user.orderID
-        }));
 
-        if (formattedRows.length === 0) {
+        if (res.data.length === 0) {
           setUpdatemessage(true);
+          return;
         }
 
-        setRows(formattedRows);
+        setOrderDetails(res.data[0]); // Assume only one order is returned
         setSearchvalue("");
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching order:", error);
         setUpdatemessage(true);
       } finally {
         setOpenLoader(false);
       }
     }, 2000);
   };
-
-  const columns = [
-    
-    { field: "orderID", headerName: "OrderID", flex: 1, minWidth: 150 },
-    {
-      field: "createdAt",
-      headerName: "Order Date",
-      flex: 0.5,
-      minWidth: 150,
-      renderCell: (params) => (
-        <Typography variant="body2">
-          {moment(params.value).format("MMMM Do YYYY, h:mm:ss a")}
-        </Typography>
-      ),
-    },
-    { field: "product", headerName: "Product", flex: 1, minWidth: 150 },
-   
-    { field: "quantity", headerName: "Qty", flex: 0.5, minWidth: 80 },
-    {
-      field: "status",
-      headerName: "Status",
-      flex: 0.5,
-      minWidth: 100,
-      renderCell: (params) => (
-        <Chip
-          label={params.value}
-          sx={{
-            backgroundColor:
-              params.value === "Pending"
-                ? "#FFA726"
-                : params.value === "In Progress"
-                ? "#42A5F5"
-                : params.value === "Completed"
-                ? "#66BB6A"
-                : "#BDBDBD",
-            color: "white",
-            fontWeight: "bold",
-          }}
-        />
-      ),
-    },
-   
-    {
-      field: "updatedAt",
-      headerName: "Tracking Date",
-      flex: 0.5,
-      minWidth: 150,
-      renderCell: (params) => {
-        const row = params.row;
-  
-        if (row.status === "Pending") {
-          return null; 
-        }
-  
-        return (
-          <Typography variant="body2">
-            {moment(params.value).format("MMMM Do YYYY, h:mm:ss a")}
-          </Typography>
-        );
-      },
-    },
-  ];
 
   return (
     <Box
@@ -157,7 +87,9 @@ function Ordertracking() {
           width: "90%",
           maxWidth: 400,
           backgroundColor:
-            theme.palette.mode === "dark" ? "rgba(18, 18, 18, 0.9)" : "rgba(255, 255, 255, 0.9)",
+            theme.palette.mode === "dark"
+              ? "rgba(18, 18, 18, 0.9)"
+              : "rgba(255, 255, 255, 0.9)",
           padding: isMobile ? 2 : 4,
           borderRadius: 3,
           textAlign: "center",
@@ -199,37 +131,77 @@ function Ordertracking() {
         />
       </Box>
 
-      {rows.length > 0 && (
+      {orderDetails && (
         <Box
           sx={{
             width: "90%",
-            maxWidth: isMobile ? 360 : 700,
-            height: "auto",
-            maxHeight: 300,
-            backgroundColor: theme.palette.mode === "dark" ? "#121212" : "white",
+            maxWidth: isMobile ? 360 : 600,
+            backgroundColor:
+              theme.palette.mode === "dark" ? "#121212" : "white",
             borderRadius: 3,
-            padding: 2,
+            padding: 3,
             boxShadow: 2,
-            overflow: "auto",
           }}
         >
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSize={3}
-            disableSelectionOnClick
-            autoHeight
-            sx={{
-              "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: theme.palette.mode === "dark" ? "#333" : "#f0f0f0",
-                color: theme.palette.mode === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-root": {
-                border: "none",
-                color: theme.palette.mode === "dark" ? "#fff" : "#000",
-              },
-            }}
-          />
+          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
+            Order ID: {orderDetails.orderID}
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            Product: {orderDetails.product}
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Quantity: {orderDetails.quantity}
+          </Typography>
+
+          <Stepper activeStep={orderSteps.indexOf(orderDetails.status)} orientation="vertical">
+            {orderSteps.map((label, index) => (
+              <Step key={label}>
+                <StepLabel>
+                  <Chip
+                    label={label}
+                    sx={{
+                      backgroundColor:
+                        label == "Pending"
+                          ? "#FFA726"
+                          : label == "In Progress"
+                          ? "#42A5F5"
+                          : label == "Completed"
+                          ? "#FFCA28"
+                          : "#66BB6A",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  />
+                </StepLabel>
+                <StepContent>
+                  <Typography variant="body2">
+                    {(orderDetails.status) &&
+                      moment(orderDetails.createdAt).format(
+                        "MMMM Do YYYY, h:mm:ss a"
+                      )
+                    }
+                     {
+                      moment(orderDetails.updatedAt).format(
+                        "MMMM Do YYYY, h:mm:ss a"
+                      )
+                    }
+                  </Typography>
+                </StepContent>
+              </Step>
+            ))}
+          </Stepper>
+
+          <Paper
+            square
+            elevation={0}
+            sx={{ p: 2, mt: 2, backgroundColor: "#f5f5f5" }}
+          >
+            <Typography>
+              {orderDetails.status == "Completed"
+                ? "Your order has been delivered!"
+                : "Your order is being processed."}
+            </Typography>
+          </Paper>
         </Box>
       )}
 

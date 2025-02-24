@@ -52,6 +52,12 @@ const Dashboard = () => {
   };
   
   useEffect(() => {
+
+    setOpenLoader(true);
+
+  const timer = setTimeout(() => {
+    setOpenLoader(false); 
+  }, 2000 ); 
     const user = JSON.parse(sessionStorage.getItem("user"));
     const isAdmin = user?.role === "admin";
     const currentDate = new Date();
@@ -71,6 +77,7 @@ const Dashboard = () => {
       getallorderuser();
       Getallorderstatuscountuser();
     }
+    return () => clearTimeout(timer);
   }, []);
 
   const getAllOrders = async () => {
@@ -393,13 +400,13 @@ const Dashboard = () => {
             height: "100%",
             backgroundColor:
               key === "pending"
-                ? "#FFEBCC" // Lighter Orange for Pending
+                ? "#FFEBCC" 
                 : key === "inProgress"
-                ? "#D6EAF8" // Lighter Blue for In Progress
+                ? "#D6EAF8" 
                 : key === "completed"
-                ? "#D4EDDA" // Lighter Green for Completed
-                : "#F9F9F9", // Lighter Grey for Default
-            color: "#000", // Ensures text visibility
+                ? "#D4EDDA" 
+                : "#F9F9F9", 
+            color: "#000",
           }}
         >
           <CardActionArea sx={{ height: "100%", p: 2, textAlign: "center" }}>
