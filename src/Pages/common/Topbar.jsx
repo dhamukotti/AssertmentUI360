@@ -22,6 +22,8 @@ const logout = ()=>{
   sessionStorage.setItem('isAuthProtected',false)
   sessionStorage.removeItem('user')
   sessionStorage.removeItem('token')
+
+
 }
 const [anchorEl, setAnchorEl] = useState(null); 
 const open = Boolean(anchorEl); 
