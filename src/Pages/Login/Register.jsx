@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Iconify from '../../components/Iconify';
+import { useNavigate } from "react-router-dom";
 
 import {
   Box,
@@ -41,6 +42,7 @@ function Register() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const colors = tokens(theme.palette.mode);
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -57,7 +59,7 @@ const [deleteid, setDeleteid] = useState("")
     password: "",
     role: "",
   });
-
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [show, setShow] = useState(false);
 
@@ -66,7 +68,24 @@ const [deleteid, setDeleteid] = useState("")
 
   useEffect(() => {
     Getalluser();
+
+
+    const checkSessionExpiration = () => {
+      const expirationTime = sessionStorage.getItem("sessionExpiration");
+
+      if (expirationTime && Date.now() > expirationTime) {
+        setSessionExpired(true); 
+      }
+    };
+
+    const interval = setInterval(checkSessionExpiration, 10000);
+    return () => clearInterval(interval);
   }, []);
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate("/");
+  };
 
   const validate = () => {
     let tempErrors = {};
@@ -114,6 +133,7 @@ const [deleteid, setDeleteid] = useState("")
         name: user.name,
         email: user.email,
         role: user.role,
+        password:user.password
       }));
       setRows(formattedRows);
     } catch (error) {
@@ -147,6 +167,7 @@ const [deleteid, setDeleteid] = useState("")
             name: formData.name,
             email: formData.email,
             role: formData.role,
+            password:formData.password
           },
           {
             headers: {
@@ -267,7 +288,6 @@ const [deleteid, setDeleteid] = useState("")
           "& .MuiDataGrid-root": { fontSize: isMobile ? "12px" : "14px" },
         }}
       >
-        {/* <DataGrid  rows={rows} columns={columns} pageSizeOptions={[5, 10]} disableRowSelectionOnClick autoHeight /> */}
     
         <DataGrid
   rows={rows}
@@ -280,7 +300,10 @@ const [deleteid, setDeleteid] = useState("")
 />
       </Box>
 
-      <Modal open={open} onClose={handleClose} aria-labelledby="modal-title">
+      <Modal
+      
+      
+      open={open} onClose={handleClose} aria-labelledby="modal-title">
         <Box sx={style}>
           <Typography id="modal-title" variant="h6" component="h2" gutterBottom>
             {editMode ? "Edit User" : "User Registration"}
@@ -356,6 +379,13 @@ const [deleteid, setDeleteid] = useState("")
             position: "absolute",
             justifyContent: "center",
             alignItems: "center",
+            backgroundColor: theme === "dark" ? "#333" : "#fff",
+            color: theme === "dark" ? "#fff" : "#000",
+            borderRadius: "10px",
+          }}
+          confirmBtnStyle={{
+            backgroundColor: theme === "dark" ? "#42A5F5" : "#1976D2",
+            color: "#fff",
           }}
           showCloseButton={false}
           showConfirm={false}
@@ -376,6 +406,13 @@ const [deleteid, setDeleteid] = useState("")
             position: "absolute",
             justifyContent: "center",
             alignItems: "center",
+            backgroundColor: theme === "dark" ? "#333" : "#fff",
+            color: theme === "dark" ? "#fff" : "#000",
+            borderRadius: "10px",
+          }}
+          confirmBtnStyle={{
+            backgroundColor: theme === "dark" ? "#42A5F5" : "#1976D2",
+            color: "#fff",
           }}
           showCloseButton={false}
           showConfirm={false}
@@ -394,7 +431,15 @@ const [deleteid, setDeleteid] = useState("")
             position: "absolute",
             justifyContent: "center",
             alignItems: "center",
+            backgroundColor: theme === "dark" ? "#333" : "#fff",
+            color: theme === "dark" ? "#fff" : "#000",
+            borderRadius: "10px",
           }}
+          confirmBtnStyle={{
+            backgroundColor: theme === "dark" ? "#42A5F5" : "#1976D2",
+            color: "#fff",
+          }}
+         
           showCloseButton={false}
           showConfirm={false}
           success
@@ -436,6 +481,17 @@ const [deleteid, setDeleteid] = useState("")
         </Box>
       </Box>
     </Modal>
+       {sessionExpired && (
+            <SweetAlert
+              title="Session Expired"
+              warning
+              confirmBtnText="OK"
+              confirmBtnBsStyle="danger"
+              onConfirm={handleLogout}
+            >
+              Your session has expired. Please log in again.
+            </SweetAlert>
+          )}
     </Box>
   );
 }

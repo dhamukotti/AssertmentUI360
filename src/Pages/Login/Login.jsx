@@ -1,12 +1,12 @@
 import React,{useState} from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
+import axios from '../../axios';
 import Iconify from '../../components/Iconify';
 import SweetAlert from "react-bootstrap-sweetalert";
-
+import Loader from "./Loder";
 import {
-  TextField,
+  TextField,  Dialog,
   Button,  IconButton,
   InputAdornment,
   Container,
@@ -36,31 +36,37 @@ const LoginForm = () => {
     const [showUserPassword, setShowUserPassword] = useState(false);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-  const handleLogin = async (values) => {
-
-    try {
-      const res = await axios.instance.post(
-        '/login',
-        {
-          email: values.email,
-          password: values.password,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      
-      const { message, token, user } = res.data;
-      sessionStorage.setItem("token", 'Bearer ' + token);
-      sessionStorage.setItem("user", JSON.stringify(user));
-      sessionStorage.setItem("isAuthProtected", true);
-      navigate('/Dashboard');
-    } catch (error) {
-      setUpdatemessage(true);
-    } finally {
-     
-    }
-  };
+    const handleLogin = async (values) => {
+      setOpenLoader(true); 
+    
+      try {
+        const res = await axios.instance.post( 
+          '/login',
+          {
+            email: values.email,
+            password: values.password,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+    
+        const { token, user } = res.data;
+        sessionStorage.setItem("token", 'Bearer ' + token);
+        sessionStorage.setItem("user", JSON.stringify(user));
+        sessionStorage.setItem("isAuthProtected", true);
+        const expirationTime = Date.now() + 15 * 60 * 1000; // Session expires in 15 minutes
+        sessionStorage.setItem("sessionExpiration", expirationTime);
+        setTimeout(() => {
+          navigate('/Dashboard');
+        }, 1500);
+      } catch (error) {
+        setUpdatemessage(true);
+      } finally {
+        setTimeout(() => setOpenLoader(false), 1500); 
+      }
+    };
+    
 
 
   return (
@@ -131,7 +137,10 @@ const LoginForm = () => {
                           error={!!errors.password && touched.password}
                           helperText={touched.password && errors.password}
                         />
-                        <LoadingButton size="large" fullWidth variant="contained" loading={loading} onClick={submitForm}>
+                        <LoadingButton size="large" fullWidth variant="contained" loading={loading} 
+                         onClick={(e) => {
+                          submitForm(e);
+                        }}>
                           Login
                         </LoadingButton>
                       </Stack>
@@ -145,7 +154,7 @@ const LoginForm = () => {
         </Paper>
           {updatemessage && (
                   <SweetAlert
-                    title="Invalid email or password!"
+                    title="Invalid credentials!"
                     
                     warning
                     showConfirm={false}
@@ -153,6 +162,23 @@ const LoginForm = () => {
                     onConfirm={() => setUpdatemessage(false)}
                   />
                 )}
+                   <Dialog
+        open={openLoader}
+        fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: "transparent",
+            boxShadow: "none",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          },
+        }}
+      >
+        <Stack justifyContent="center" alignItems="center">
+          <Loader />
+        </Stack>
+      </Dialog>
       </Container>
     </Box>
   );

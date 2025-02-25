@@ -12,6 +12,8 @@ import {
   IconButton,
   Button,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -37,7 +39,7 @@ function Order() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     const colors = tokens(theme.palette.mode);
-  
+   const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState(null);
@@ -62,7 +64,7 @@ function Order() {
     const handleClose1 = () => setShow(false);
     const [editorderid, seteditorderid] = useState("")
    
-  
+    const [sessionExpired, setSessionExpired] = useState(false);
     useEffect(() => {
       const user = JSON.parse(sessionStorage.getItem("user"));
       const isAdmin = user?.role == "admin";
@@ -72,6 +74,17 @@ if (isAdmin) {
   getallorderuser();
 }
     
+
+const checkSessionExpiration = () => {
+  const expirationTime = sessionStorage.getItem("sessionExpiration");
+
+  if (expirationTime && Date.now() > expirationTime) {
+    setSessionExpired(true); 
+  }
+};
+
+const interval = setInterval(checkSessionExpiration, 10000);
+return () => clearInterval(interval);
    
     }, []);
   
@@ -129,7 +142,7 @@ createdBy: user?.id || null,
           ...prevFormData,
           [e.target.name]: e.target.value,
           status: isAdmin ? prevFormData.status : defaultStatus,
-          priority: isAdmin ? prevFormData.priority : defaultPriority,
+          // priority: isAdmin ? prevFormData.priority : defaultPriority,
           createdBy: user?.id || null,
         }));
       }
@@ -368,6 +381,10 @@ const columns = isAdmin
       setOrderid(value.orderID)
     setShow(true)
     };
+    const handleLogout = () => {
+      sessionStorage.clear();
+      navigate("/");
+    };
   
   
     const DeleteBank = async () => {
@@ -488,14 +505,14 @@ const columns = isAdmin
         <MenuItem value="Completed">Completed</MenuItem>
       </TextField>
 }
-{isAdmin &&
+
       <TextField 
         select 
         fullWidth 
         label="Priority"
         name="priority"
-//value={formData.priority}
-        value={!isAdmin ? "Medium" : formData.priority}
+
+        value={ formData.priority}
         onChange={handleChange} 
         margin="normal" 
         required
@@ -506,7 +523,7 @@ const columns = isAdmin
         <MenuItem value="Medium">Medium</MenuItem>
         <MenuItem value="High">High</MenuItem>
       </TextField>
-}
+
       <Box display="flex" justifyContent="space-between" mt={2}>
         <Button onClick={handleClose} variant="outlined">Cancel</Button>
         <Button type="submit" variant="contained" color="primary">{editMode ? "Update Order" : "Submit Order"}</Button>
@@ -603,6 +620,17 @@ const columns = isAdmin
         </Box>
       </Box>
     </Modal>
+     {sessionExpired && (
+                <SweetAlert
+                  title="Session Expired"
+                  warning
+                  confirmBtnText="OK"
+                  confirmBtnBsStyle="danger"
+                  onConfirm={handleLogout}
+                >
+                  Your session has expired. Please log in again.
+                </SweetAlert>
+              )}
     </Box>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Box,
   TextField,
@@ -16,6 +16,7 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import SweetAlert from "react-bootstrap-sweetalert";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
@@ -36,7 +37,8 @@ function Ordertracking() {
   const [activeStep, setActiveStep] = useState(0);
 
   const steps = ["Pending", "In Progress", "Completed"];
-
+ const navigate = useNavigate();
+   const [sessionExpired, setSessionExpired] = useState(false);
   const getallorder = async () => {
     setOpenLoader(true);
     setRows([]);
@@ -87,6 +89,23 @@ function Ordertracking() {
       }, 2000);
     }
   };
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate("/");
+  };
+  useEffect(() => {
+    const checkSessionExpiration = () => {
+      const expirationTime = sessionStorage.getItem("sessionExpiration");
+
+      if (expirationTime && Date.now() > expirationTime) {
+        setSessionExpired(true); 
+      }
+    };
+
+    const interval = setInterval(checkSessionExpiration, 10000);
+    return () => clearInterval(interval);
+  }, [])
+  
 
   return (
     <Box
@@ -149,7 +168,7 @@ function Ordertracking() {
       <StepLabel
          icon={
           index < activeStep ? (
-            <CheckCircleIcon color="success" fontSize="large" />
+            <PendingActionsIcon color="success" fontSize="large" />
           ) : index === activeStep ? ( 
             step.label === "Pending" ? (
               <PendingActionsIcon color="warning" fontSize="large" />
@@ -258,6 +277,17 @@ function Ordertracking() {
           <Loader />
         </Stack>
       </Dialog>
+       {sessionExpired && (
+                  <SweetAlert
+                    title="Session Expired"
+                    warning
+                    confirmBtnText="OK"
+                    confirmBtnBsStyle="danger"
+                    onConfirm={handleLogout}
+                  >
+                    Your session has expired. Please log in again.
+                  </SweetAlert>
+                )}
     </Box>
   );
 }
