@@ -1,4 +1,3 @@
-/* From Uiverse.io by vinodjangid07 */
 .loader {
     width: fit-content;
     height: fit-content;
@@ -17,14 +16,12 @@
     justify-content: flex-end;
     overflow-x: hidden;
   }
-  /* truck upper body */
   .truckBody {
     width: 130px;
     height: fit-content;
     margin-bottom: 6px;
     animation: motion 1s linear infinite;
   }
-  /* truck suspension animation*/
   @keyframes motion {
     0% {
       transform: translateY(0px);
@@ -36,7 +33,6 @@
       transform: translateY(0px);
     }
   }
-  /* truck's tires */
   .truckTires {
     width: 130px;
     height: fit-content;

@@ -22,6 +22,7 @@ const logout = ()=>{
   sessionStorage.setItem('isAuthProtected',false)
   sessionStorage.removeItem('user')
   sessionStorage.removeItem('token')
+  sessionStorage.removeItem('sessionExpiration')
 
 
 }
@@ -90,12 +91,12 @@ const handleMenuItemClick = (action) => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={() => handleMenuItemClick("Profile")}>
+        {/* <MenuItem onClick={() => handleMenuItemClick("Profile")}>
           <Typography variant="body2">Profile</Typography>
-        </MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick("Settings")}>
+        </MenuItem> */}
+        {/* <MenuItem onClick={() => handleMenuItemClick("Settings")}>
           <Typography variant="body2">Settings</Typography>
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem onClick={() => handleMenuItemClick("Logout")}>
           <Typography variant="body2" color="error">
             Logout

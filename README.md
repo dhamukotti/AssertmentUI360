@@ -2,7 +2,7 @@ WareGo Order Tracking System
 
 #Overview
 
-The WareGo Order Tracking System is a React.js-based web application designed to track orders efficiently. It provides real-time updates on order statuses, estimated delivery times, and order history.
+The WareGo Order Tracking System is a React.js-based web application designed to track orders efficiently. It provides real-time updates on order statuses and order history.
 
 #Features
 

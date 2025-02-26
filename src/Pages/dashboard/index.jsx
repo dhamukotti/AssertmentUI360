@@ -634,12 +634,12 @@ color: isDarkMode ? "white" : "black", // Text color
   >
     <AlertTitle sx={{ fontSize: "16px", fontWeight: "bold" }}>Welcome</AlertTitle>
     <Typography variant="body1" fontWeight="600">
-      <strong>{username}</strong>, Login Successfully!
+      <strong>{(username).charAt(0).toUpperCase() + username.slice(1)}</strong>, Login Successfully!
     </Typography>
   </Alert>
 </Snackbar>
   {updatemessage && (
-        <SweetAlert title="No Order Found"
+        <SweetAlert title="No Orders Found"
       
         warning 
         showConfirm={false} 

@@ -142,7 +142,6 @@ createdBy: user?.id || null,
           ...prevFormData,
           [e.target.name]: e.target.value,
           status: isAdmin ? prevFormData.status : defaultStatus,
-          // priority: isAdmin ? prevFormData.priority : defaultPriority,
           createdBy: user?.id || null,
         }));
       }
@@ -407,13 +406,7 @@ const columns = isAdmin
              setDeletemessage(true)
           })
         })
-        // .then(res => {
-        //     getallorder()
-        //   setShow(false)
-        //  setDeletemessage(true)
-            
-          
-        // })
+       
     }
   return (
 <Box m="20px">
@@ -443,7 +436,6 @@ const columns = isAdmin
           "& .MuiDataGrid-root": { fontSize: isMobile ? "12px" : "14px" },
         }}
       >
-        {/* <DataGrid  rows={rows} columns={columns} pageSizeOptions={[5, 10]} disableRowSelectionOnClick autoHeight /> */}
     
         <DataGrid
   rows={rows}

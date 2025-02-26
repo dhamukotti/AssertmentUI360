@@ -124,8 +124,7 @@ function Ordertracking() {
     >
       <Card
         sx={{
-          width: isMobile ? "90%" : "50%",
-          maxWidth: 600,
+          width: isMobile ? "90%" : "100%",
           p: 3,
           borderRadius: 3,
           boxShadow: 3,
@@ -168,17 +167,17 @@ function Ordertracking() {
       <StepLabel
          icon={
           index < activeStep ? (
-            <PendingActionsIcon color="success" fontSize="large" />
-          ) : index === activeStep ? ( 
-            step.label === "Pending" ? (
+            <HourglassTopIcon color="success" fontSize="large" />
+          ) : index == activeStep ? ( 
+            step.label == "Pending" ? (
               <PendingActionsIcon color="warning" fontSize="large" />
-            ) : step.label === "In Progress" ? (
+            ) : step.label == "In Progress" ? (
               <HourglassTopIcon color="primary" fontSize="large" />
             ) : (
               <CheckCircleIcon color="success" fontSize="large" />
             )
           ) : (
-            <PendingActionsIcon fontSize="large" /> 
+            <HourglassTopIcon fontSize="large" /> 
           )
         }
       >
@@ -236,8 +235,8 @@ function Ordertracking() {
               </Card>
             ))
           ) : (
-            <Typography textAlign="center">No Orders Found</Typography>
-          )}
+<></>       
+   )}
         </Box>
       </Card>
 

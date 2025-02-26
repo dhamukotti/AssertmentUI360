@@ -243,7 +243,7 @@ const [deleteid, setDeleteid] = useState("")
   };
 
 
-  const DeleteBank = async () => {
+  const Deleteuser = async () => {
     const delte = await axios.instance
       .delete(`/UserDelete/${deleteid}`, {
         headers: {
@@ -472,7 +472,7 @@ const [deleteid, setDeleteid] = useState("")
           You won&apos;t be able to revert this!
         </Typography>
         <Box mt={3} display="flex" justifyContent="center" gap={2}>
-          <Button variant="contained" color="primary" onClick={DeleteBank}>
+          <Button variant="contained" color="primary" onClick={Deleteuser}>
             Yes, delete it!
           </Button>
           <Button variant="contained" color="error" onClick={handleClose1}>

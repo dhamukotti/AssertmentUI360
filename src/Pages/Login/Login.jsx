@@ -108,6 +108,7 @@ const LoginForm = () => {
                           name="email"
                           label="Email"
                           size="small"
+                          autoComplete="off"
                           fullWidth
                           value={values.email}
                           error={!!errors.email && touched.email}
